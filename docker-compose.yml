@@ -1,0 +1,45 @@
+version: "2.0"
+services:
+  mlflow:
+    build:
+      context: ./mlflow
+      dockerfile: Dockerfile
+    container_name: mlflow
+    depends_on:
+      - mlflow-storage
+    ports:
+      - "5000:5000"
+    command: >
+      sh -c "cron &&
+             mlflow server --host 0.0.0.0 --backend-store-uri sqlite:///database/runs.db --default-artifact-root ftp://alpineftp:alpineftp@mlflow-storage --serve-artifacts
+            "
+    volumes:
+      - database:/database
+
+    restart: always
+    labels:
+      traefik.docker.network: traefik-proxy
+      traefik.enable: "true"
+      traefik.http.middlewares.mlflow-https-redirect.redirectscheme.scheme: https
+      traefik.http.routers.mlflow-secure.entrypoints: https
+      traefik.http.routers.mlflow-secure.rule: Host(`mlflow-uvl.ifi.uni-heidelberg.de`)
+      traefik.http.routers.mlflow-secure.service: mlflow
+      traefik.http.routers.mlflow-secure.tls: "true"
+      traefik.http.routers.mlflow-secure.tls.certresolver: http
+      traefik.http.routers.mlflow.entrypoints: http
+      traefik.http.routers.mlflow.middlewares: mlflow-https-redirect
+      traefik.http.routers.mlflow.rule: Host(`mlflow-uvl.ifi.uni-heidelberg.de`)
+      traefik.http.services.mlflow.loadbalancer.server.port: "5000"
+      traefik.http.middlewares.test-auth.basicauth.users: ${BASIC_AUTH}
+
+  mlflow-storage:
+    image: delfer/alpine-ftp-server
+    container_name: mlflow-storage
+    environment:
+      ADDRESS: mlflow-storage
+    volumes:
+      - storage:/ftp
+
+volumes:
+  database:
+  storage:
