@@ -33,6 +33,9 @@ services:
       traefik.http.routers.mlflow.rule: Host(`mlflow-uvl.ifi.uni-heidelberg.de`)
       traefik.http.services.mlflow.loadbalancer.server.port: "5000"
       traefik.http.middlewares.mlflow-auth.basicauth.users: ${BASIC_AUTH}
+    networks:
+      - mlflow
+      - proxy
 
   mlflow-storage:
     image: delfer/alpine-ftp-server
@@ -41,7 +44,16 @@ services:
       ADDRESS: mlflow-storage
     volumes:
       - storage:/ftp
+    networks:
+      - mlflow
+    restart: always
 
 volumes:
   database:
   storage:
+
+networks:
+  proxy:
+    name: traefik-proxy
+    external: true
+  mlflow:
