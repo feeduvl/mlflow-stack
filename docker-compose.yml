@@ -17,6 +17,9 @@ services:
       - database:/database
 
     restart: always
+    networks:
+      - traefik-proxy
+      - mlflow
     labels:
       traefik.docker.network: traefik-proxy
       traefik.enable: "true"
@@ -30,7 +33,7 @@ services:
       traefik.http.routers.mlflow.middlewares: mlflow-https-redirect
       traefik.http.routers.mlflow.rule: Host(`mlflow-uvl.ifi.uni-heidelberg.de`)
       traefik.http.services.mlflow.loadbalancer.server.port: "5000"
-      traefik.http.middlewares.test-auth.basicauth.users: ${BASIC_AUTH}
+      traefik.http.middlewares.traefik-auth.basicauth.users: ${BASIC_AUTH}
 
   mlflow-storage:
     image: delfer/alpine-ftp-server
@@ -39,7 +42,13 @@ services:
       ADDRESS: mlflow-storage
     volumes:
       - storage:/ftp
+    networks:
+      - mlflow
 
 volumes:
   database:
   storage:
+
+networks:
+  traefik-proxy:
+  mlflow:
