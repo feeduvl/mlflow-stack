@@ -26,12 +26,13 @@ services:
       traefik.http.routers.mlflow-secure.rule: Host(`mlflow-uvl.ifi.uni-heidelberg.de`)
       traefik.http.routers.mlflow-secure.service: mlflow
       traefik.http.routers.mlflow-secure.tls: "true"
+      traefik.http.routers.mlflow-secure.middlewares: mlflow-auth
       traefik.http.routers.mlflow-secure.tls.certresolver: http
       traefik.http.routers.mlflow.entrypoints: http
       traefik.http.routers.mlflow.middlewares: mlflow-https-redirect
       traefik.http.routers.mlflow.rule: Host(`mlflow-uvl.ifi.uni-heidelberg.de`)
       traefik.http.services.mlflow.loadbalancer.server.port: "5000"
-      traefik.http.middlewares.traefik-auth.basicauth.users: ${BASIC_AUTH}
+      traefik.http.middlewares.mlflow-auth.basicauth.users: ${BASIC_AUTH}
 
   mlflow-storage:
     image: delfer/alpine-ftp-server
