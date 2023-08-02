@@ -17,9 +17,7 @@ services:
       - database:/database
 
     restart: always
-    networks:
-      - traefik-proxy
-      - mlflow
+
     labels:
       traefik.docker.network: traefik-proxy
       traefik.enable: "true"
@@ -42,13 +40,7 @@ services:
       ADDRESS: mlflow-storage
     volumes:
       - storage:/ftp
-    networks:
-      - mlflow
 
 volumes:
   database:
   storage:
-
-networks:
-  traefik-proxy:
-  mlflow:
