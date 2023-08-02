@@ -8,10 +8,10 @@ services:
     depends_on:
       - mlflow-storage
     ports:
-      - "5000:5000"
+      - "5001:5000"
     command: >
       sh -c "cron &&
-             mlflow server --host 0.0.0.0 --backend-store-uri sqlite:///database/runs.db --default-artifact-root ftp://alpineftp:alpineftp@mlflow-storage --serve-artifacts --artifacts-destination s3://ma-mlflow/artifacts/
+             mlflow server --host 0.0.0.0 --backend-store-uri sqlite:///database/runs.db --artifacts-destination ftp://alpineftp:alpineftp@mlflow-storage/ftp/alpineftp/ --serve-artifacts
             "
     volumes:
       - database:/database
@@ -31,7 +31,7 @@ services:
       traefik.http.routers.mlflow.entrypoints: http
       traefik.http.routers.mlflow.middlewares: mlflow-https-redirect
       traefik.http.routers.mlflow.rule: Host(`mlflow-uvl.ifi.uni-heidelberg.de`)
-      traefik.http.services.mlflow.loadbalancer.server.port: "5000"
+      traefik.http.services.mlflow.loadbalancer.server.port: "5001"
       traefik.http.middlewares.mlflow-auth.basicauth.users: ${BASIC_AUTH}
 
   mlflow-storage:
