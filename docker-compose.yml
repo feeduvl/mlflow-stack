@@ -9,7 +9,8 @@ services:
       - mlflow-storage
     command: >
       sh -c "cron &&
-             mlflow server --host 0.0.0.0 --backend-store-uri sqlite:///database/runs.db --artifacts-destination ftp://alpineftp:alpineftp@mlflow-storage/ftp/alpineftp/ --serve-artifacts
+             mlflow server --host 0.0.0.0 --backend-store-uri sqlite:///database/runs.db --artifacts-destination ftp://alpineftp:alpineftp@mlflow-storage/ftp/alpineftp/ --serve-artifacts &&
+             mlflow db upgrade sqlite:///database/runs.db
             "
     volumes:
       - database:/database
