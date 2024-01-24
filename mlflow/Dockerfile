@@ -1,4 +1,4 @@
-FROM ghcr.io/mlflow/mlflow:v2.5.0
+FROM ghcr.io/mlflow/mlflow:v2.9.2
 
 RUN apt-get -y update  && apt-get -y install cron
 
