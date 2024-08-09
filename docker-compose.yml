@@ -7,6 +7,10 @@ services:
     container_name: mlflow
     depends_on:
       - mlflow-storage
+
+    environment:
+      MLFLOW_BACKEND_STORE_URI: sqlite:///database/runs.db
+      MLFLOW_ARTIFACTS_DESTINATION: ftp://alpineftp:alpineftp@mlflow-storage/ftp/alpineftp/
     command: >
       sh -c "cron &&
              mlflow server --host 0.0.0.0 --serve-artifacts
