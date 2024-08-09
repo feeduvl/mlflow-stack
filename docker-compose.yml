@@ -9,7 +9,7 @@ services:
       - mlflow-storage
     command: >
       sh -c "cron &&
-             mlflow server --host 0.0.0.0 --backend-store-uri sqlite:///database/runs.db --artifacts-destination ftp://alpineftp:alpineftp@mlflow-storage/ftp/alpineftp/ --serve-artifacts
+             mlflow server --host 0.0.0.0 --serve-artifacts
              # If you need to upgrade the database because mlflow tells you to, replace above mlflow server command with "mlflow db upgrade sqlite:///database/runs.db" and run once, then switch back
             "
     volumes:
