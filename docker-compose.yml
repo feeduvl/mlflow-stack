@@ -7,13 +7,12 @@ services:
     container_name: mlflow
     depends_on:
       - mlflow-storage
-
     environment:
       MLFLOW_BACKEND_STORE_URI: sqlite:///database/runs.db
       MLFLOW_ARTIFACTS_DESTINATION: ftp://alpineftp:alpineftp@mlflow-storage/ftp/alpineftp/
     command: >
       sh -c "cron &&
-             mlflow server --host 0.0.0.0 --serve-artifacts
+             mlflow server --host 0.0.0.0 --serve-artifacts  --gunicorn-opts '--timeout 900'
              # If you need to upgrade the database because mlflow tells you to, replace above mlflow server command with "mlflow db upgrade sqlite:///database/runs.db" and run once, then switch back
             "
     volumes:
@@ -36,6 +35,8 @@ services:
       traefik.http.routers.mlflow.rule: Host(`mlflow-uvl.ifi.uni-heidelberg.de`)
       traefik.http.services.mlflow.loadbalancer.server.port: "5000"
       traefik.http.middlewares.mlflow-auth.basicauth.users: ${BASIC_AUTH}
+      traefik.http.middlewares.limit.buffering.maxRequestBodyBytes: "3221225472"
+      traefik.http.middlewares.limit.buffering.maxResponseBodyBytes: "3221225472"
 
   mlflow-storage:
     image: delfer/alpine-ftp-server
